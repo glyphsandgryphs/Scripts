@@ -14,7 +14,7 @@ Expected output:
 
 ```
 Count: 4
-Total: 10.5
+Total: 10.50
 Average: 2.62
 ```
 
@@ -42,4 +42,4 @@ To run a specific test module:
 python -m pytest tests/test_sample_script.py
 ```
 
-The test suite covers both the library function and the CLI output for the sample script.
+The test suite covers both the library function and the CLI output for the sample script, including helpful error handling for invalid numeric input.
