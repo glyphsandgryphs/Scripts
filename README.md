@@ -1,6 +1,6 @@
 # Scripts
 
-This repository contains runnable utility scripts. Start with `scripts/sample_tool.py`, a command-line example that shows how to parse arguments and emit structured logs. See [`docs/scripts.md`](docs/scripts.md) for usage details.
+This repository contains runnable utility scripts with accompanying tests. Start with `scripts/sample_tool.py`, a command-line example that shows how to parse arguments and emit structured logs. See [`docs/scripts.md`](docs/scripts.md) for usage details.
 A small sample script for summarizing numeric input and accompanying tests powered by `pytest`.
 
 ## Sample script
@@ -44,13 +44,10 @@ python -m pytest tests/test_sample_script.py
 ```
 
 The test suite covers both the library function and the CLI output for the sample script, including helpful error handling for invalid numeric input.
-# Scripts Repository
+# Included utilities
 
-This repository contains utility scripts and documentation.
-
-## File organizer
-- Location: `scripts/organize_files.py`
-- Purpose: Organize files inside a target directory into subfolders named after their file extensions.
-- Usage: `python scripts/organize_files.py <directory> [--verbose]`
+- `sample_script.py`: Summarize numeric input (count, total, average) with CLI validation.
+- `scripts/sample_tool.py`: Demonstrate argument parsing and structured logging.
+- `scripts/organize_files.py`: Organize files inside a target directory into extension-named folders with collision handling.
 
 See [STATUS.md](STATUS.md) for a summary of the current state and recommendations for next steps.
