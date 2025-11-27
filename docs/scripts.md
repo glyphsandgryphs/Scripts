@@ -26,3 +26,18 @@ Arguments:
 - `--uppercase`: Output greetings in uppercase.
 - `--log-file`: Path to an optional log file to mirror the console output.
 - `--verbose`: Enable debug logging.
+
+## `scripts/organize_files.py`
+
+- Organizes files in a target directory into subfolders based on extension.
+- Names files with numeric suffixes when collisions are detected.
+
+### Usage
+
+```
+python scripts/organize_files.py /path/to/dir --verbose
+```
+
+Arguments:
+- `DIRECTORY`: Path to the folder containing files to organize.
+- `--verbose`: Enable debug-level logging to observe each move.

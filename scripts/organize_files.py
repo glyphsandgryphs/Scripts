@@ -120,7 +120,7 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def main() -> None:
+def main() -> int:
     args = parse_args()
     logger = configure_logger(verbose=args.verbose)
     try:
@@ -129,7 +129,9 @@ def main() -> None:
         organize_files(target_dir, logger)
     except Exception as error:  # noqa: BLE001
         logger.error("Organization failed: %s", error)
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
