@@ -55,3 +55,24 @@ This repository contains utility scripts and documentation.
 - Usage: `python scripts/organize_files.py <directory> [--verbose]`
 
 See [STATUS.md](STATUS.md) for a summary of the current state and recommendations for next steps.
+
+## Photo migration to microSD (drive D:)
+
+- Location: `scripts/photo_migration.py`
+- Purpose: Move or copy common photo formats onto a microSD card mounted at drive `D:`.
+
+### Usage
+
+```bash
+# Move photos from the default Windows picture folders to D:\Photos
+python scripts/photo_migration.py
+
+# Copy instead of move, with verbose console output
+python scripts/photo_migration.py --copy --verbose
+
+# Provide explicit source folders and a custom destination
+python scripts/photo_migration.py --sources C:\Users\You\Pictures D:\DCIM --destination D:\Backup\Photos
+```
+
+The script organizes media into `<destination>/<year>/<extension>/` and writes a
+`photo_migration.log` file inside the destination for traceability.
