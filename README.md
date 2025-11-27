@@ -54,3 +54,19 @@ This repository contains utility scripts and documentation.
 - Usage: `python scripts/organize_files.py <directory> [--verbose]`
 
 See [STATUS.md](STATUS.md) for a summary of the current state and recommendations for next steps.
+
+## Cross-device folder organizer
+
+- Location: `scripts/apply_structure.py`
+- Purpose: Apply a consistent folder structure and filename convention across multiple roots (local PCs, synced cloud folders, external drives).
+- Usage:
+
+```bash
+python scripts/apply_structure.py /mnt/cloud /media/usb --verbose
+```
+
+Add `--dry-run` to preview moves without making changes. Windows and PowerShell users can run the equivalent automation via `scripts/apply_structure.ps1`:
+
+```powershell
+pwsh scripts/apply_structure.ps1 -Roots "C:\\Sync", "D:\\External" -Verbose
+```
