@@ -76,3 +76,23 @@ python scripts/photo_migration.py --sources C:\Users\You\Pictures D:\DCIM --dest
 
 The script organizes media into `<destination>/<year>/<extension>/` and writes a
 `photo_migration.log` file inside the destination for traceability.
+
+## OneDrive photo migration to external drive (drive E:)
+
+- Location: `scripts/onedrive_photo_migration.py`
+- Purpose: Move or copy photos from OneDrive to an external drive mounted at `E:`.
+
+### Usage
+
+```bash
+# Move photos from detected OneDrive roots to E:\Photos
+python scripts/onedrive_photo_migration.py
+
+# Copy instead of move, with verbose console output
+python scripts/onedrive_photo_migration.py --copy --verbose
+
+# Provide explicit source folders and a custom destination
+python scripts/onedrive_photo_migration.py --sources C:\Users\You\OneDrive --destination E:\Backup\Photos
+```
+
+The script writes `onedrive_photo_migration.log` inside the destination for traceability.
