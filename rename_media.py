@@ -5,7 +5,7 @@ import argparse
 import datetime as dt
 import re
 from pathlib import Path
-from typing import Iterable, List, Tuple
+from typing import Iterable, List, Optional, Tuple
 
 
 def _derive_description(name: str) -> str:
@@ -16,9 +16,21 @@ def _derive_description(name: str) -> str:
     return normalized.lower() or "file"
 
 
+def _derive_year_month(name: str, fallback_path: Path) -> str:
+    stem = Path(name).stem
+    match = re.search(r"(19|20)\d{2}[-_]?([01]\d)", stem)
+    if match:
+        year = match.group(0)[:4]
+        month = match.group(2)
+        if "01" <= month <= "12":
+            return f"{year}-{month}"
+
+    stats = fallback_path.stat()
+    return dt.datetime.fromtimestamp(stats.st_mtime).strftime("%Y-%m")
+
+
 def _format_new_name(path: Path) -> Tuple[str, str, str]:
-    stats = path.stat()
-    date_str = dt.datetime.fromtimestamp(stats.st_mtime).strftime("%Y-%m")
+    date_str = _derive_year_month(path.name, path)
     description = _derive_description(path.name)
     suffix = path.suffix.lower()
     base = f"{date_str}-{description}"

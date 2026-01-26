@@ -23,7 +23,7 @@ def test_rename_files_basic(tmp_path: Path):
     renames = rename_media.rename_files(tmp_path)
 
     assert renames[0][0] == file_path
-    expected = tmp_path / "2022-03-img-beach.jpg"
+    expected = tmp_path / "2022-01-img-beach.jpg"
     assert renames[0][1] == expected
     assert expected.exists()
 
@@ -50,3 +50,12 @@ def test_dry_run_does_not_rename(tmp_path: Path):
     assert renames[0][0] == file_path
     assert renames[0][1].name == "2023-04-vacation.png"
     assert (tmp_path / "202304vacation.png").exists()
+
+
+def test_fallback_to_mtime_when_no_date_in_name(tmp_path: Path):
+    file_path = tmp_path / "summer_trip.png"
+    _touch_with_time(file_path, 2020, 7, 4)
+
+    renames = rename_media.rename_files(tmp_path)
+
+    assert renames[0][1].name == "2020-07-summer-trip.png"
