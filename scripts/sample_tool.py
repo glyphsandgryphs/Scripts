@@ -2,19 +2,12 @@
 
 Usage examples:
     python scripts/sample_tool.py --name Ada --count 3 --verbose
-    python scripts/sample_tool.py --name Ada --count 3 --log-file logs/run.log
+    python scripts/sample_tool.py --name Ada --count 3 --uppercase --log-file logs/run.log
 
 The script prints a greeting message multiple times and demonstrates how to
 control logging verbosity and output destinations from the command line.
 """
-Sample command-line tool with argument parsing and structured logging.
 
-Usage examples:
-    python scripts/sample_tool.py --name Ada --count 3 --verbose
-
-The script prints a greeting message multiple times and demonstrates
-how to control logging verbosity from the command line.
-"""
 from __future__ import annotations
 
 import argparse
@@ -24,11 +17,7 @@ from typing import List, Sequence
 
 
 def positive_int(value: str) -> int:
-    """Return a validated positive integer parsed from ``value``.
-
-    Raises ``argparse.ArgumentTypeError`` if validation fails so argparse can
-    surface a helpful error to the user.
-    """
+    """Return a validated positive integer parsed from ``value``."""
 
     try:
         parsed = int(value)
@@ -38,10 +27,11 @@ def positive_int(value: str) -> int:
     if parsed < 1:
         raise argparse.ArgumentTypeError("count must be a positive integer")
     return parsed
-from typing import List
 
 
 def build_parser() -> argparse.ArgumentParser:
+    """Build and return the CLI parser for the sample tool."""
+
     parser = argparse.ArgumentParser(
         description="Sample tool demonstrating argument parsing and logging",
     )
@@ -65,9 +55,6 @@ def build_parser() -> argparse.ArgumentParser:
         "--log-file",
         type=Path,
         help="Optional file path to also write logs to",
-        type=int,
-        default=1,
-        help="Number of greetings to print",
     )
     parser.add_argument(
         "--verbose",
@@ -91,6 +78,7 @@ def configure_logging(verbose: bool, log_file: Path | None) -> None:
         level=level,
         format="%(asctime)s [%(levelname)s] %(message)s",
         handlers=handlers,
+        force=True,
     )
 
 
@@ -108,21 +96,11 @@ def emit_greetings(greetings: Sequence[str]) -> None:
 
     for greeting in greetings:
         logging.info(greeting)
-def configure_logging(verbose: bool) -> None:
-    level = logging.DEBUG if verbose else logging.INFO
-    logging.basicConfig(
-        level=level,
-        format="%(asctime)s [%(levelname)s] %(message)s",
-    )
-
-
-def generate_greetings(name: str, count: int) -> List[str]:
-    if count < 1:
-        raise ValueError("count must be a positive integer")
-    return [f"Hello, {name}!" for _ in range(count)]
 
 
 def main() -> None:
+    """Entrypoint for CLI usage."""
+
     parser = build_parser()
     args = parser.parse_args()
 
@@ -131,12 +109,6 @@ def main() -> None:
 
     greetings = format_greetings(args.name, args.count, uppercase=args.uppercase)
     emit_greetings(greetings)
-    configure_logging(args.verbose)
-    logging.debug("Parsed arguments: %s", args)
-
-    greetings = generate_greetings(args.name, args.count)
-    for greeting in greetings:
-        logging.info(greeting)
 
 
 if __name__ == "__main__":
