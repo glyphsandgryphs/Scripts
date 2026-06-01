@@ -2,7 +2,10 @@
 
 This repository contains utility scripts plus lightweight documentation and tests.
 
-## Sample CLI tool
+This repository contains runnable utility scripts with accompanying tests. Start with `scripts/sample_tool.py`, a command-line example that shows how to parse arguments and emit structured logs. See [`docs/scripts.md`](docs/scripts.md) for usage details.
+This repository contains runnable utility scripts. Start with `scripts/sample_tool.py`, a command-line example that shows how to parse arguments, emit structured logs, and optionally mirror output to a log file or uppercase the generated greetings. See [`docs/scripts.md`](docs/scripts.md) for usage details and invocation examples.
+This repository contains runnable utility scripts. Start with `scripts/sample_tool.py`, a command-line example that shows how to parse arguments and emit structured logs. See [`docs/scripts.md`](docs/scripts.md) for usage details.
+A small sample script for summarizing numeric input and accompanying tests powered by `pytest`.
 
 - Location: `scripts/sample_tool.py`
 - Purpose: Provide a representative script that demonstrates robust argument parsing, validated input, and structured logging (console + optional file output).
@@ -51,13 +54,12 @@ python -m pip install -r requirements.txt
 python sample_script.py 1 2 3 4.5
 ```
 
-Example output:
+The test suite covers both the library function and the CLI output for the sample script, including helpful error handling for invalid numeric input.
+# Included utilities
 
-```text
-Count: 4
-Total: 10.50
-Average: 2.62
-```
+- `sample_script.py`: Summarize numeric input (count, total, average) with CLI validation.
+- `scripts/sample_tool.py`: Demonstrate argument parsing and structured logging.
+- `scripts/organize_files.py`: Organize files inside a target directory into extension-named folders with collision handling.
 
 ## Run tests (CI-friendly)
 
