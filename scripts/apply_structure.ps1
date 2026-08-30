@@ -13,8 +13,7 @@ param(
     [Parameter(Mandatory = $true)]
     [string[]]$Roots,
 
-    [switch]$DryRun,
-    [switch]$Verbose
+    [switch]$DryRun
 )
 
 $CategoryMap = [ordered]@{
@@ -73,9 +72,6 @@ function Move-FileSafe {
         [System.IO.FileInfo]$File,
         [string]$DestinationDir
     )
-    if (-not (Test-Path -LiteralPath $DestinationDir)) {
-        New-Item -ItemType Directory -Path $DestinationDir | Out-Null
-    }
     $sanitized = Sanitize-Stem $File.BaseName
     $target = Join-Path -Path $DestinationDir -ChildPath "$sanitized$($File.Extension.ToLower())"
     $counter = 1
@@ -86,31 +82,53 @@ function Move-FileSafe {
     if ($DryRun) {
         Write-Host "[dry-run] Would move $($File.FullName) -> $target"
     } else {
+        if (-not (Test-Path -LiteralPath $DestinationDir)) {
+            New-Item -ItemType Directory -Path $DestinationDir | Out-Null
+        }
         Move-Item -LiteralPath $File.FullName -Destination $target
         Write-Host "Moved $($File.FullName) -> $target"
     }
 }
 
+function Test-InManagedFolder {
+    param(
+        [System.IO.FileInfo]$File,
+        [System.IO.DirectoryInfo]$RootDirectory
+    )
+
+    $directory = $File.Directory
+    while ($null -ne $directory -and $directory.FullName -ne $RootDirectory.FullName) {
+        if ($CategoryMap.Contains($directory.Name) -or $Skeleton -contains $directory.Name) {
+            return $true
+        }
+        $directory = $directory.Parent
+    }
+    return $false
+}
+
 foreach ($root in $Roots) {
     Write-Host "Processing root: $root"
-    if (-not (Test-Path -LiteralPath $root)) {
-        Write-Warning "Skipping $root (not found)"
+    if (-not (Test-Path -LiteralPath $root -PathType Container)) {
+        Write-Warning "Skipping $root (not found or not a directory)"
         continue
     }
 
-    Ensure-Directories -Root $root
+    $rootDirectory = Get-Item -LiteralPath $root
+    if (-not $DryRun) {
+        Ensure-Directories -Root $rootDirectory.FullName
+    }
     $moved = @{}
     $skipped = 0
 
-    Get-ChildItem -Path $root -Recurse -File | ForEach-Object {
+    Get-ChildItem -LiteralPath $rootDirectory.FullName -Recurse -File | ForEach-Object {
         $file = $_
-        if ($CategoryMap.Contains($file.Directory.Name)) {
-            if ($Verbose) { Write-Host "Skipping already categorized file $($file.FullName)" }
+        if (Test-InManagedFolder -File $file -RootDirectory $rootDirectory) {
+            Write-Verbose "Skipping already categorized file $($file.FullName)"
             $skipped += 1
             return
         }
         $category = Determine-Category -File $file
-        $destDir = Join-Path -Path $root -ChildPath $category
+        $destDir = Join-Path -Path $rootDirectory.FullName -ChildPath $category
         Move-FileSafe -File $file -DestinationDir $destDir
         if ($moved.ContainsKey($category)) { $moved[$category] += 1 } else { $moved[$category] = 1 }
     }

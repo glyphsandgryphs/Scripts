@@ -109,7 +109,6 @@ def iter_files(root: Path) -> Iterable[Path]:
 
 
 def move_file(file_path: Path, destination_dir: Path, logger: logging.Logger, dry_run: bool = False) -> Path:
-    destination_dir.mkdir(parents=True, exist_ok=True)
     sanitized = sanitize_stem(file_path.stem)
     destination = destination_dir / f"{sanitized}{file_path.suffix.lower()}"
     counter = 1
@@ -127,13 +126,23 @@ def move_file(file_path: Path, destination_dir: Path, logger: logging.Logger, dr
 
 
 def apply_rules(root: Path, logger: logging.Logger, category_map: Mapping[str, List[str]], dry_run: bool = False) -> PlanResult:
-    ensure_directories(root, category_map)
+    if not root.exists():
+        raise FileNotFoundError(root)
+    if not root.is_dir():
+        raise NotADirectoryError(root)
+
+    if not dry_run:
+        ensure_directories(root, category_map)
+
     moved: Dict[str, int] = {}
     skipped = 0
+    managed_folders = set(category_map) | set(SKELETON_FOLDERS)
 
     for file_path in iter_files(root):
-        # Skip files already inside a managed category to avoid churn
-        if file_path.parent.name in category_map:
+        # Skip files anywhere below a managed folder to avoid moving project
+        # contents or repeatedly processing already categorized files.
+        relative_parents = file_path.relative_to(root).parts[:-1]
+        if any(part in managed_folders for part in relative_parents):
             logger.debug("Skipping already categorized file %s", file_path)
             skipped += 1
             continue
