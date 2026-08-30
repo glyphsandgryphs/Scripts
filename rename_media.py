@@ -3,11 +3,10 @@
 Usage:
     python rename_media.py /path/to/media --dry-run
 
-The new file names follow the pattern ``YYYY-MM-description.ext`` where
-``YYYY`` and ``MM`` come from the file's modification time and
-``description`` is derived from the original filename with numbers
-removed. Existing files are never overwritten; a numeric suffix is
-appended when needed to avoid collisions.
+The new file names follow the pattern ``YYYY-MM-description.ext``. The date
+comes from a recognizable year and month in the original filename, falling
+back to the file's modification time. Existing files are never overwritten;
+a numeric suffix is appended when needed to avoid collisions.
 """
 from __future__ import annotations
 
@@ -30,6 +29,7 @@ class RenamePlan:
 
 _DIGIT_PATTERN = re.compile(r"\d+")
 _NON_ALNUM_PATTERN = re.compile(r"[^A-Za-z0-9]+")
+_YEAR_MONTH_PATTERN = re.compile(r"(?<!\d)((?:19|20)\d{2})[-_]?((?:0[1-9]|1[0-2]))")
 
 
 def _normalize_description(name: str) -> str:
@@ -46,11 +46,21 @@ def _normalize_description(name: str) -> str:
     return normalized
 
 
+def _derive_year_month(path: Path) -> str:
+    """Return a filename date when present, otherwise the modification date."""
+
+    match = _YEAR_MONTH_PATTERN.search(path.stem)
+    if match:
+        return f"{match.group(1)}-{match.group(2)}"
+
+    timestamp = datetime.fromtimestamp(path.stat().st_mtime)
+    return timestamp.strftime("%Y-%m")
+
+
 def _build_target_name(path: Path) -> str:
     """Build the target filename (without directory) for ``path``."""
 
-    timestamp = datetime.fromtimestamp(path.stat().st_mtime)
-    prefix = timestamp.strftime("%Y-%m")
+    prefix = _derive_year_month(path)
     description = _normalize_description(path.stem)
     return f"{prefix}-{description}{path.suffix}"
 
