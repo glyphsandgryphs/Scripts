@@ -82,5 +82,22 @@ These tests validate the sample script's core behavior (summary calculations and
 The script writes `onedrive_photo_migration.log` inside the destination for traceability.
 
 See [STATUS.md](STATUS.md) for a summary of the current state and recommendations for next steps.
+
 - [`docs/scripts.md`](docs/scripts.md)
 - [`STATUS.md`](STATUS.md)
+
+## Cross-device folder organizer
+
+- Location: `scripts/apply_structure.py`
+- Purpose: Apply a consistent folder structure and filename convention across multiple roots (local PCs, synced cloud folders, external drives).
+- Usage:
+
+```bash
+python scripts/apply_structure.py /mnt/cloud /media/usb --verbose
+```
+
+Add `--dry-run` to preview moves without making changes. Windows and PowerShell users can run the equivalent automation via `scripts/apply_structure.ps1`:
+
+```powershell
+pwsh scripts/apply_structure.ps1 -Roots "C:\\Sync", "D:\\External" -Verbose
+```
